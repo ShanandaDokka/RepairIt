@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyBuEWzWGUXgQiG3bhmQUpOAIQyFhIGWgI0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>752459022558</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.googHacksProject</string>
+	<key>PROJECT_ID</key>
+	<string>repairit-1ae3a</string>
+	<key>STORAGE_BUCKET</key>
+	<string>repairit-1ae3a.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:752459022558:ios:ed91cbd58c01bc21e8c24f</string>
+</dict>
+</plist>
