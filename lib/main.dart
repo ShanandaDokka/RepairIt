@@ -24,6 +24,13 @@ class MyApp extends StatelessWidget {
       title: 'RepairIt',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        appBarTheme: AppBarTheme(
+          titleTextStyle: TextStyle(
+            fontSize: 28, 
+            fontWeight: FontWeight.bold, 
+            fontFamily: 'Nunito', 
+          ),
+        ),
       ),
       home: Auth()
     );
