@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:namer_app/main.dart';
+import 'package:namer_app/sign_up_page.dart';
 
 class LogInPage extends StatefulWidget {
   @override
@@ -17,12 +19,24 @@ class _LogInPageState extends State<LogInPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+      _navigateToMainPage();
     } catch (e) {
       print(e);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to sign in')),
-      );
     }
+  }
+
+  void _navigateToSignUp() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SignUpPage())
+    );
+  }
+
+  void _navigateToMainPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MyApp())
+    );
   }
 
   @override
@@ -46,6 +60,20 @@ class _LogInPageState extends State<LogInPage> {
             ElevatedButton(
               onPressed: _logIn,
               child: Text('Sign In'),
+            ),
+            Spacer(),
+            Text(
+                'Not registered with us? Sign up for free instead!',
+                style: TextStyle(fontSize: 16, backgroundColor: Colors.amber, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            SizedBox(
+              width: 200,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _navigateToSignUp,
+                child: Text('Sign Up'),
+              ),
             ),
           ],
         )
