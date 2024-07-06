@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'log_in_page.dart';
 import 'firebase_options.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +18,93 @@ void main() async {
   runApp(MyApp());
 }
 
+class SurveyPage extends StatefulWidget {
+  @override
+  _SurveyPageState createState() => _SurveyPageState();
+}
+
+class _SurveyPageState extends State<SurveyPage> {
+  final PageController _pageController = PageController();
+  String? phone, car, laptop;
+  int _currentPage = 0;
+
+  void _nextPage() {
+    if (_currentPage < 2) {
+      _pageController.nextPage(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      _submitSurvey();
+    }
+  }
+
+  void _submitSurvey() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('surveyCompleted', true);
+    
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => Auth()),
+    );
+  }
+
+  Widget _buildQuestionPage(String question, void Function(String?) onSaved) {
+    return Padding(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            question,
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 20),
+          TextFormField(
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Enter your answer here',
+            ),
+            onChanged: onSaved,
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Initial Survey')),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (int page) {
+          setState(() {
+            _currentPage = page;
+          });
+        },
+        children: [
+          _buildQuestionPage(
+            'What is your phone model?',
+            (value) => phone = value,
+          ),
+          _buildQuestionPage(
+            'What is your car model?',
+            (value) => car = value,
+          ),
+          _buildQuestionPage(
+            'What is your laptop model?',
+            (value) => laptop = value,
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.arrow_forward),
+        onPressed: _nextPage,
+      ),
+    );
+  }
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -37,21 +126,45 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Auth extends StatelessWidget {
+class Auth extends StatefulWidget {
+  @override
+  _AuthState createState() => _AuthState();
+}
+
+class _AuthState extends State<Auth> {
+  bool _surveyCompleted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkSurveyCompletion();
+  }
+
+  void _checkSurveyCompletion() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool surveyCompleted = prefs.getBool('surveyCompleted') ?? false;
+    setState(() {
+      _surveyCompleted = surveyCompleted;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!_surveyCompleted) {
+      return SurveyPage();
+    }
     return StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(), 
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Something went wrong!'));
-          } else if (snapshot.hasData) {
-            return MyHomePage();
-          } else {
-            return LogInPage();
-          }
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Something went wrong!'));
+        } else if (snapshot.hasData) {
+          return MyHomePage();
+        } else {
+          return LogInPage();
+        }
       },
     );
   }
