@@ -33,9 +33,9 @@ class _LogInPageState extends State<LogInPage> {
   }
 
   void _navigateToMainPage() {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => MyApp())
+      MaterialPageRoute(builder: (context) => MyHomePage())
     );
   }
 

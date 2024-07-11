@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:namer_app/log_in_page.dart';
+import 'package:namer_app/survey_page.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -22,13 +23,19 @@ class _SignUpPageState extends State<SignUpPage> {
       if (mounted) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => LogInPage()),
+          MaterialPageRoute(builder: (context) => SurveyPage(onSurveyCompleted: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => LogInPage()),
+            );
+          })),
         );
       }
     } catch (e) {
       print('Failed to sign up: $e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
