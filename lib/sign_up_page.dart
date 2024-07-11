@@ -32,7 +32,24 @@ class _SignUpPageState extends State<SignUpPage> {
         );
       }
     } catch (e) {
-      print('Failed to sign up: $e');
+     showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+
+          content: Text('This email is already in use.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
     }
   }
 

@@ -19,24 +19,32 @@ class _SurveyPageState extends State<SurveyPage> {
 
   void _nextPage() async {
     if (_currentPage == 0) {
-      if (await _verifyPhoneModel(phone!)) {
-        _nextPage();
+      if (phone == null || phone!.trim().isEmpty) {
+        _moveToNextPage();
+      } else if (await _verifyPhoneModel(phone!)) {
+        _moveToNextPage();  // Changed from _nextPage() to _moveToNextPage()
       } else {
         _showErrorDialog();
       }
     } else if (_currentPage == 2) {
-      if (await _verifyLaptopModel(laptop!)) {
+      if (laptop == null || laptop!.trim().isEmpty) {
+        _submitSurvey();
+      } else if (await _verifyLaptopModel(laptop!)) {
         _submitSurvey();
       } else {
         _showErrorDialog();
       }
     } else {
-      _pageController.nextPage(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      _moveToNextPage();
     }
   }
+
+void _moveToNextPage() {
+  _pageController.nextPage(
+    duration: Duration(milliseconds: 300),
+    curve: Curves.easeInOut,
+  );
+}
 
   Future<bool> _verifyLaptopModel(String laptopModel) async {
     final response = await http.post(
