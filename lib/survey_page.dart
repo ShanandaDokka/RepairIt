@@ -22,7 +22,15 @@ class _SurveyPageState extends State<SurveyPage> {
       if (phone == null || phone!.trim().isEmpty) {
         _moveToNextPage();
       } else if (await _verifyPhoneModel(phone!)) {
-        _moveToNextPage();  // Changed from _nextPage() to _moveToNextPage()
+        _moveToNextPage();  
+      } else {
+        _showErrorDialog();
+      }
+    } else if (_currentPage == 1) {
+      if (car == null || car!.trim().isEmpty) {
+        _moveToNextPage();
+      } else if (await _verifyCarModel(car!)) {
+        _moveToNextPage();  
       } else {
         _showErrorDialog();
       }
@@ -71,7 +79,8 @@ void _moveToNextPage() {
         return true;
       }
     }
-    return false;
+    // TODO: change this after paying for API
+    return true;
   }
 
   Future<bool> _verifyPhoneModel(String phoneModel) async {
@@ -99,6 +108,29 @@ void _moveToNextPage() {
         return true;
       }
     }
+    // TODO: change this after paying for API
+    return true;
+  }
+
+  Future<bool> _verifyCarModel(String carModel) async {
+    final url = Uri.parse(
+        'https://mc-api.marketcheck.com/v2/search/car/active?api_key=DKyJAEnhbECh2hCcCNBvaSayelzQOhlH&make=$carModel');
+
+    final response = await http.get(url);
+    print("car response status code is ${response.body}");
+    if (response.statusCode == 200) {
+      final responseBody = json.decode(response.body);
+      print("Parsed response body: $responseBody");
+
+      if (responseBody != null &&
+          responseBody['listings'] != null &&
+          (responseBody['listings'] as List).isNotEmpty) {
+        // Save the car model
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('car', carModel);
+        return true;
+      }
+    }
     return false;
   }
 
@@ -106,6 +138,8 @@ void _moveToNextPage() {
     String content = "";
     if (_currentPage == 0) {
       content = "Phone";
+    } else if (_currentPage == 1) {
+      content = "Car";
     } else if (_currentPage == 2) {
       content = "Laptop";
     }

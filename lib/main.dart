@@ -51,7 +51,6 @@ class Auth extends StatelessWidget {
         } else if (snapshot.data == null) {
           return LogInPage();
         } else {
-          print("entering fucking here");
           return MyHomePage();
         }
       },
