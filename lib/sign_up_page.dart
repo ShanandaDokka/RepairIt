@@ -40,7 +40,10 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sign Up')),
+      appBar: AppBar(
+        title: Text('Sign Up'),
+        backgroundColor: Colors.blue, // Example background color
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -83,6 +86,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     _signUp();
                   }
                 },
+                style: ButtonStyle(
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.blue), // Background color
+                ),
                 child: Text('Sign Up'),
               ),
             ],

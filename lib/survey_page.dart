@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SurveyPage extends StatefulWidget {
   final VoidCallback onSurveyCompleted;
@@ -15,15 +17,108 @@ class _SurveyPageState extends State<SurveyPage> {
   String? phone, car, laptop;
   int _currentPage = 0;
 
-  void _nextPage() {
-    if (_currentPage < 2) {
+  void _nextPage() async {
+    if (_currentPage == 0) {
+      if (await _verifyPhoneModel(phone!)) {
+        _nextPage();
+      } else {
+        _showErrorDialog();
+      }
+    } else if (_currentPage == 2) {
+      if (await _verifyLaptopModel(laptop!)) {
+        _submitSurvey();
+      } else {
+        _showErrorDialog();
+      }
+    } else {
       _pageController.nextPage(
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
-    } else {
-      _submitSurvey();
     }
+  }
+
+  Future<bool> _verifyLaptopModel(String laptopModel) async {
+    final response = await http.post(
+      Uri.parse('https://api.techspecs.io/v4/product/search'),
+      headers: {
+        'query': laptopModel.trim(),
+        'keepCasing': 'true',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImN1c19RUzhLNHFMQjVKcTJKTyIsIm1vZXNpZlByaWNpbmdJZCI6InByaWNlXzFNUXF5dkJESWxQbVVQcE1SWUVWdnlLZSIsImlhdCI6MTcyMDY2OTk1N30.bE4rTfAhAGE-Fc0hEnN5kxMZleqqtW0xaEG6NdfQBC8', 
+      },
+      body: jsonEncode({
+        'category': 'laptop',
+      }),
+    );
+    print("status code is ${response.statusCode}");
+    print("response is ${response.body}");
+    if (response.statusCode == 200) {
+      final responseBody = json.decode(response.body);
+      print("parsed response body is $responseBody");
+      print("ITEMS IS ${responseBody['data']['items']}");
+      if (responseBody != null && responseBody['data']['items'] != null && responseBody['data']['items'].isNotEmpty) {
+        // Save the laptop model
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('laptop', laptopModel);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<bool> _verifyPhoneModel(String phoneModel) async {
+    final response = await http.post(
+      Uri.parse('https://api.techspecs.io/v4/product/search'),
+      headers: {
+        'query': phoneModel.trim(),
+        'keepCasing': 'true',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImN1c19RUzhLNHFMQjVKcTJKTyIsIm1vZXNpZlByaWNpbmdJZCI6InByaWNlXzFNUXF5dkJESWxQbVVQcE1SWUVWdnlLZSIsImlhdCI6MTcyMDY2OTk1N30.bE4rTfAhAGE-Fc0hEnN5kxMZleqqtW0xaEG6NdfQBC8', 
+      },
+      body: jsonEncode({
+        'category': 'phone',
+      }),
+    );
+    print("status code is ${response.statusCode}");
+    print("response is ${response.body}");
+    if (response.statusCode == 200) {
+      final responseBody = json.decode(response.body);
+      print("parsed response body is $responseBody");
+      print("ITEMS IS ${responseBody['data']['items']}");
+      if (responseBody != null && responseBody['data']['items'] != null && responseBody['data']['items'].isNotEmpty) {
+        // Save the laptop model
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('phone', phoneModel);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void _showErrorDialog() {
+    String content = "";
+    if (_currentPage == 0) {
+      content = "Phone";
+    } else if (_currentPage == 2) {
+      content = "Laptop";
+    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+
+          content: Text('$content model not found. Please enter a valid model.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _submitSurvey() async {

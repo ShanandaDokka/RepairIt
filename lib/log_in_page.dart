@@ -42,7 +42,10 @@ class _LogInPageState extends State<LogInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Log In')),
+      appBar: AppBar(
+        title: Text('Log In'),
+        backgroundColor: Colors.blue, // Example background color
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -59,12 +62,15 @@ class _LogInPageState extends State<LogInPage> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: _logIn,
+              style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all<Color>(Colors.blue), // Background color
+              ),
               child: Text('Sign In'),
             ),
             Spacer(),
             Text(
                 'Not registered with us? Sign up for free instead!',
-                style: TextStyle(fontSize: 16, backgroundColor: Colors.amber, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16, backgroundColor: Colors.lightBlue, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
             SizedBox(
@@ -72,6 +78,9 @@ class _LogInPageState extends State<LogInPage> {
               height: 50,
               child: ElevatedButton(
                 onPressed: _navigateToSignUp,
+                style: ButtonStyle(
+                  foregroundColor: WidgetStateProperty.all<Color>(Colors.blue), // Background color
+                ),
                 child: Text('Sign Up'),
               ),
             ),
