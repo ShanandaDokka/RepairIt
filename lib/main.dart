@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'log_in_page.dart';
+import 'my_devices_page.dart';
 import 'firebase_options.dart';
 
 
@@ -67,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
     Page1(),
-    Page2(),
+    MyDevicesPage(),
     Page3(),
   ];
 
