@@ -85,7 +85,17 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Repair It'),
+        title: Align(
+          alignment: Alignment.centerLeft, 
+          child: Text(
+            'Repair It',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18, 
+            ),
+          ),
+        ),
+        backgroundColor: Color.fromARGB(255, 128, 152, 162), 
       ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(

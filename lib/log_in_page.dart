@@ -63,14 +63,15 @@ class _LogInPageState extends State<LogInPage> {
             ElevatedButton(
               onPressed: _logIn,
               style: ButtonStyle(
-                foregroundColor: WidgetStateProperty.all<Color>(Colors.blue), // Background color
+                backgroundColor: WidgetStateProperty.all<Color>(Colors.blue), // Background color
               ),
               child: Text('Sign In'),
             ),
             Spacer(),
             Text(
-                'Not registered with us? Sign up for free instead!',
+                'Not registered with us? Sign up for free!',
                 style: TextStyle(fontSize: 16, backgroundColor: Colors.lightBlue, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
             ),
             SizedBox(height: 10),
             SizedBox(
