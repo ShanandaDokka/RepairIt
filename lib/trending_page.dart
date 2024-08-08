@@ -240,8 +240,7 @@ class _TrendingPageState extends State<TrendingPage> {
           SizedBox(height: 8),
           Container(
             height: 150, 
-            child: Scrollbar(
-              thumbVisibility: true, 
+            child: Scrollbar( 
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 8.0), 
                 child: ListView.builder(
