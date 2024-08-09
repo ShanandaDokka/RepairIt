@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:namer_app/fix_it_page.dart';
 import 'log_in_page.dart';
 import 'my_devices_page.dart';
 import 'trending_page.dart';
@@ -78,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> _pages = [
     TrendingPage(),
     MyDevicesPage(),
-    Page3(),
+    FixItPage(),
   ];
 
   @override
