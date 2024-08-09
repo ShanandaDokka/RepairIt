@@ -120,7 +120,6 @@ class _LogInPageState extends State<LogInPage> {
                   'Not registered with us? Sign up for free!',
                   style: TextStyle(
                     fontSize: 16,
-                    backgroundColor: Colors.lightBlue,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,

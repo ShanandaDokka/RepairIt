@@ -8,8 +8,7 @@ class TrendingPage extends StatefulWidget {
   _TrendingPageState createState() => _TrendingPageState();
 }
 
-
-class _TrendingPageState extends State<TrendingPage> {
+class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClientMixin {
   List<String> trendingCars = [];
   List<String> trendingPhones = [];
   List<String> trendingLaptops = [];
@@ -18,7 +17,7 @@ class _TrendingPageState extends State<TrendingPage> {
   List<String> phoneScores = [];
   List<String> laptopScores = [];
 
-  bool _isLoading = true; 
+  bool _isLoading = true;
   bool _hasInitialized = false;
 
   @override
@@ -33,7 +32,7 @@ class _TrendingPageState extends State<TrendingPage> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _hasInitialized = true; 
+          _hasInitialized = true;
         });
       }
     }
@@ -45,8 +44,8 @@ class _TrendingPageState extends State<TrendingPage> {
       final data = await _gemini.fetchData(prompt);
       return data.toString();
     } catch (e) {
-      print('Error fetching data: $e'); 
-      return 'Failed to fetch data'; 
+      print('Error fetching data: $e');
+      return 'Failed to fetch data';
     }
   }
 
@@ -63,25 +62,27 @@ class _TrendingPageState extends State<TrendingPage> {
       String laptopData = await _fetchData(geminiTrendingLaptops);
       List<String> laptopModels = laptopData.split(', ');
       laptopModels = laptopModels.map((str) => str.trim()).toList();
-      
+
       if (mounted) {
         setState(() {
-          trendingCars = carModels.toList();
-          trendingLaptops = laptopModels.toList();
-          trendingPhones = phoneModels.toList();
+          trendingCars = carModels;
+          trendingLaptops = laptopModels;
+          trendingPhones = phoneModels;
         });
       }
     } catch (e) {
       print('Error loading devices: $e');
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
-  } 
+  }
 
   Future<void> _getScoreAndImage() async {
-    const int maxRetries = 3; 
-    const Duration retryDelay = Duration(seconds: 2); 
+    const int maxRetries = 3;
+    const Duration retryDelay = Duration(seconds: 2);
 
     for (int attempt = 0; attempt < maxRetries; attempt++) {
       try {
@@ -89,14 +90,10 @@ class _TrendingPageState extends State<TrendingPage> {
         String scorePromptLaptops = getScoreString(trendingLaptops);
         String scorePromptCars = getScoreString(trendingCars);
 
-        String scorePhone;
-        String scoreLaptop;
-        String scoreCar;
-        
         if (!_hasInitialized) {
-          scorePhone = await _fetchData(scorePromptPhones);
-          scoreLaptop = await _fetchData(scorePromptLaptops);
-          scoreCar = await _fetchData(scorePromptCars);
+          String scorePhone = await _fetchData(scorePromptPhones);
+          String scoreLaptop = await _fetchData(scorePromptLaptops);
+          String scoreCar = await _fetchData(scorePromptCars);
 
           if ((scorePhone.isEmpty || scoreLaptop.isEmpty || scoreCar.isEmpty)) {
             if (attempt < maxRetries - 1) {
@@ -123,11 +120,10 @@ class _TrendingPageState extends State<TrendingPage> {
           }
         }
       } catch (e) {
-        print('Error fetching or processing data: $e');
         if (attempt < maxRetries - 1) {
           await Future.delayed(retryDelay);
         } else {
-          print("Error retrieving scores");
+          return;
         }
       }
     }
@@ -147,9 +143,9 @@ class _TrendingPageState extends State<TrendingPage> {
     if (currentScores.isEmpty) {
       return "img/zero_star.png";
     }
-    
+
     if (index < 0 || index >= currentScores.length) {
-      return "img/zero_star.png"; 
+      return "img/zero_star.png";
     }
 
     int scoreVal = int.tryParse(currentScores[index]) ?? 0;
@@ -157,14 +153,19 @@ class _TrendingPageState extends State<TrendingPage> {
     switch (scoreVal) {
       case 0:
         image = "img/zero_star.png";
+        break;
       case 1:
         image = "img/one_star.png";
+        break;
       case 2:
         image = "img/two_star.png";
+        break;
       case 3:
         image = "img/three_star.png";
+        break;
       case 4:
         image = "img/four_star.png";
+        break;
       default:
         image = "img/five_star.png";
         break;
@@ -175,6 +176,8 @@ class _TrendingPageState extends State<TrendingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final scrollController = ScrollController();
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -195,12 +198,12 @@ class _TrendingPageState extends State<TrendingPage> {
                 ),
               ],
             ),
-            SizedBox(height: 2), // Space between title and subtitle
+            SizedBox(height: 2),
             Flexible(
               child: Text(
                 trendingPageSubtitle,
                 style: TextStyle(fontSize: 16, color: Colors.black54),
-                overflow: TextOverflow.visible, // Ensure it doesn’t get cut off
+                overflow: TextOverflow.visible,
               ),
             ),
           ],
@@ -208,21 +211,23 @@ class _TrendingPageState extends State<TrendingPage> {
         toolbarHeight: 100,
       ),
       body: _isLoading
-        ? Center(child: CircularProgressIndicator())
-        : Scrollbar(
-          thumbVisibility: true,
-          radius: Radius.circular(8),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSubheading(context, 'Phones', trendingPhones),
-                _buildSubheading(context, 'Cars', trendingCars),
-                _buildSubheading(context, 'Laptops', trendingLaptops),
-              ],
+          ? Center(child: CircularProgressIndicator())
+          : Scrollbar(
+              thumbVisibility: true,
+              controller: scrollController,
+              radius: Radius.circular(8),
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSubheading(context, 'Phones', trendingPhones),
+                    _buildSubheading(context, 'Cars', trendingCars),
+                    _buildSubheading(context, 'Laptops', trendingLaptops),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
     );
   }
 
@@ -239,10 +244,12 @@ class _TrendingPageState extends State<TrendingPage> {
           ),
           SizedBox(height: 8),
           Container(
-            height: 150, 
-            child: Scrollbar( 
+            height: 150,
+            child: Scrollbar(
+              controller: scrollController, 
+              thumbVisibility: true,
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 8.0), 
+                padding: const EdgeInsets.only(bottom: 8.0),
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   controller: scrollController,
@@ -263,4 +270,7 @@ class _TrendingPageState extends State<TrendingPage> {
     String image = _isLoading ? "img/loading.png" : getScoreImage(title, index);
     return ClickableBox(item: item, image: image);
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
