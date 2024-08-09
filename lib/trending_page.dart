@@ -43,7 +43,6 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
   Future<String> _fetchData(String prompt) async {
     try {
       final data = await _gemini.fetchData(prompt);
-      throw Exception();
       return data.toString();
     } catch (e) {
       print('Error fetching data: $e');
