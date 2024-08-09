@@ -18,6 +18,11 @@ nothing else in your response. Give me the top 5 trending laptop models.''';
 const String trendingPageSubtitle = '''Looking to purchase something?
 Explore repairability of the latest trending devices!''';
 
+const String resourceOverloadError = '''Our apologies, 
+there are currently too many 
+outgoing requests to Gemini.
+Please try again in a few minutes. ''';
+
 String getScoreString(List<String> input) {
   return "Rate the devices in this list [${input[0]}, ${input[1]}, ${input[2]}, ${input[3]}, ${input[4]}] out of five in terms of repairability. Consider how easy it is to manually repair at home, how substitutable its parts are, and the cost of repairability. Give me the five scores separated by commas and just";
 }

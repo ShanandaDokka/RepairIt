@@ -48,8 +48,8 @@ class _IndividualDevicePageState extends State<IndividualDevice> {
             children: [
               Center(
                 child: Image.asset(
-                  determineImage(widget.score), // Replace with your image path
-                  width: MediaQuery.of(context).size.width * 0.6, // Adjust width as needed
+                  determineImage(widget.score), 
+                  width: MediaQuery.of(context).size.width * 0.6, 
                 ),
               ),
               SizedBox(height: 20),

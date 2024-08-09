@@ -19,6 +19,7 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
 
   bool _isLoading = true;
   bool _hasInitialized = false;
+  bool _error = false;
 
   @override
   void initState() {
@@ -42,9 +43,15 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
   Future<String> _fetchData(String prompt) async {
     try {
       final data = await _gemini.fetchData(prompt);
+      throw Exception();
       return data.toString();
     } catch (e) {
       print('Error fetching data: $e');
+      if (mounted) {
+        setState(() {
+          _error = true;
+        });
+      }
       return 'Failed to fetch data';
     }
   }
@@ -213,7 +220,28 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : Scrollbar(
+          : _error ? 
+            Center(
+              child: Container(
+                padding: EdgeInsets.all(16.0),
+                margin: EdgeInsets.symmetric(horizontal: 20.0),
+                decoration: BoxDecoration(
+                  color: Colors.red[50], 
+                  borderRadius: BorderRadius.circular(8.0), 
+                  border: Border.all(color: Colors.red, width: 2.0), 
+                ),
+                child: Text(
+                  resourceOverloadError,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.red[800], 
+                    fontWeight: FontWeight.bold, 
+                  ),
+                  textAlign: TextAlign.center, 
+                ),
+              ),
+            )
+            : Scrollbar(
               thumbVisibility: true,
               controller: scrollController,
               radius: Radius.circular(8),
