@@ -87,13 +87,22 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Align(
           alignment: Alignment.centerLeft, 
-          child: Text(
-            'Repair It',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18, 
-            ),
-          ),
+          child: Row( 
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Repair It',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18, 
+                ),
+              ),
+              Icon(
+                Icons.account_circle,
+                color: Colors.black,
+              ),
+            ],
+          )
         ),
         backgroundColor: Color.fromARGB(255, 128, 152, 162), 
       ),

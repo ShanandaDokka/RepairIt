@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:namer_app/individual_device.dart';
 
 class ClickableBox extends StatefulWidget {
   final String item;
   final String image; 
+  final int score;
+  final String title; 
 
-  ClickableBox({required this.item, required this.image});
+  ClickableBox({required this.item, required this.image, required this.score, required this.title});
 
   @override
   _ClickableBoxState createState() => _ClickableBoxState();
@@ -30,7 +33,12 @@ class _ClickableBoxState extends State<ClickableBox> {
       },
       child: GestureDetector(
         onTap: () {
-          print('Clicked on ${widget.item}');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => IndividualDevice(title: widget.item, score: widget.score, category: widget.title),
+            ),
+          );
         },
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: 8),

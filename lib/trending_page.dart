@@ -129,7 +129,7 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
     }
   }
 
-  String getScoreImage(String title, int index) {
+  List<String> getScoreImage(String title, int index) {
     String image;
     List<String> currentScores;
     if (title == "Phones") {
@@ -139,39 +139,40 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
     } else {
       currentScores = laptopScores;
     }
+    List<String> retVal = List<String>.empty(growable: true);
 
     if (currentScores.isEmpty) {
-      return "img/zero_star.png";
+      retVal.add("0");
+      retVal.add("img/zero_star.png");
+      return retVal;
     }
 
     if (index < 0 || index >= currentScores.length) {
-      return "img/zero_star.png";
+      retVal.add("0");
+      retVal.add("img/zero_star.png");
+      return retVal;
     }
 
     int scoreVal = int.tryParse(currentScores[index]) ?? 0;
+    retVal.add("$scoreVal");
 
     switch (scoreVal) {
       case 0:
         image = "img/zero_star.png";
-        break;
       case 1:
         image = "img/one_star.png";
-        break;
       case 2:
         image = "img/two_star.png";
-        break;
       case 3:
         image = "img/three_star.png";
-        break;
       case 4:
         image = "img/four_star.png";
-        break;
       default:
         image = "img/five_star.png";
-        break;
     }
 
-    return image;
+    retVal.add(image);
+    return retVal;
   }
 
   @override
@@ -266,9 +267,9 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
     );
   }
 
-  Widget _buildClickableBox(BuildContext context, String item, int index, String title) {
-    String image = _isLoading ? "img/loading.png" : getScoreImage(title, index);
-    return ClickableBox(item: item, image: image);
+  Widget _buildClickableBox(BuildContext context, String item, int index, String category) {
+    List<String> scores = getScoreImage(category, index);
+    return ClickableBox(item: item, image: scores[1], score: int.parse(scores[0]), title: category);
   }
 
   @override
