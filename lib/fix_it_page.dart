@@ -77,17 +77,16 @@ class _FixItPageState extends State<FixItPage> {
       repairOptions = {};
     });
 
-    String repairSolution = await _fetchData("My $device device has this issue: $issue. I have three options for repair: at-home, independent repair shops, or manufacturer repair. First, list the one you think is best only writing the phrase \"at-home repair\", \"independent business\", or \"manufacturer repair\". Then, in a new paragraph for each, write a small paragraph about the cost/convinience of each option respectively. Make the answers specific to the device and issue.");
+    String repairSolution = await _fetchData("My $device device has this issue: $issue. I have three options for repair: at-home, independent repair shops, or manufacturer repair. First, list the one you think is best only writing the phrase \"at-home repair\", \"independent business\", or \"manufacturer repair\". Then, in a new paragraph for each, write a small paragraph about the cost/convenience of each option respectively. Make the answers specific to the device and issue.");
 
     // Simulated response parsing
     setState(() {
       solution = repairSolution ?? 'No solution found.';
       List<String> fetchedSolutions = repairSolution.split("\n");
       fetchedSolutions = fetchedSolutions.map((str) => str.trim()).toList();
-      // Simulating parsing of the response into options
-      // Replace this with actual parsing logic
-      print("SOLUTION $fetchedSolutions ");
-      recommendedSolution = fetchedSolutions[0]; // Example of a recommended solution
+
+      // Example of a recommended solution
+      recommendedSolution = fetchedSolutions[0];
       repairOptions = {
         'At Home Repair': fetchedSolutions[2],
         'Independent Repair Shop': fetchedSolutions[4],
@@ -119,84 +118,135 @@ class _FixItPageState extends State<FixItPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Fix It'),
-      ),
+      backgroundColor: Colors.grey[100],
       body: SingleChildScrollView(
         controller: _scrollController, // Attach the ScrollController
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'What device do you need help with?',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
-            DropdownButton<String>(
-              hint: Text('Select a device'),
-              value: selectedDevice,
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedDevice = newValue;
-                  selectedProblemCategory = null; // Reset problem category when device changes
-                  isCustomProblem = false; // Reset custom problem flag
-                });
-              },
-              items: devices.map<DropdownMenuItem<String>>((Map<String, String> device) {
-                return DropdownMenuItem<String>(
-                  value: device['name'],
-                  child: Text(device['name']!),
-                );
-              }).toList(),
-            ),
-            if (selectedDevice != null) ...[
-              SizedBox(height: 16),
-              Text(
-                'What\'s wrong with the device?',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              'Fix It',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
               ),
-              SizedBox(height: 8),
-              DropdownButton<String>(
-                hint: Text('Select a problem category'),
-                value: selectedProblemCategory,
-                onChanged: _selectProblemCategory,
-                items: problemCategories.map<DropdownMenuItem<String>>((String category) {
+            ),
+            SizedBox(height: 20),
+            Text(
+              'What device do you need help with?',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 10),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              child: DropdownButton<String>(
+                isExpanded: true,
+                underline: SizedBox(),
+                hint: Text('Select a device'),
+                value: selectedDevice,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedDevice = newValue;
+                    selectedProblemCategory = null; // Reset problem category when device changes
+                    isCustomProblem = false; // Reset custom problem flag
+                  });
+                },
+                items: devices.map<DropdownMenuItem<String>>((Map<String, String> device) {
                   return DropdownMenuItem<String>(
-                    value: category,
-                    child: Text(category),
+                    value: device['name'],
+                    child: Text(device['name']!),
                   );
                 }).toList(),
               ),
+            ),
+            if (selectedDevice != null) ...[
+              SizedBox(height: 20),
+              Text(
+                'What\'s wrong with the device?',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 10),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 4,
+                    ),
+                  ],
+                ),
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  underline: SizedBox(),
+                  hint: Text('Select a problem category'),
+                  value: selectedProblemCategory,
+                  onChanged: _selectProblemCategory,
+                  items: problemCategories.map<DropdownMenuItem<String>>((String category) {
+                    return DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(category),
+                    );
+                  }).toList(),
+                ),
+              ),
               if (isCustomProblem) ...[
-                SizedBox(height: 8),
+                SizedBox(height: 10),
                 TextField(
                   onChanged: (value) {
                     customProblemDescription = value;
                   },
                   decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
                     hintText: "Describe the problem...",
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   maxLines: 3,
                 ),
               ],
-              SizedBox(height: 16),
-              ElevatedButton(
-                key: _submitButtonKey, // Key for the submit button
-                onPressed: () {
-                  if (selectedProblemCategory != null) {
-                    String issue = isCustomProblem
-                        ? customProblemDescription
-                        : selectedProblemCategory!;
-                    _getHelpForDevice(selectedDevice!, issue);
-                  }
-                },
-                child: Text('Get Help'),
+              SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  key: _submitButtonKey, // Key for the submit button
+                  onPressed: () {
+                    if (selectedProblemCategory != null) {
+                      String issue = isCustomProblem
+                          ? customProblemDescription
+                          : selectedProblemCategory!;
+                      _getHelpForDevice(selectedDevice!, issue);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14), backgroundColor: Colors.blueAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text('Get Help'),
+                ),
               ),
               if (isLoading)
                 Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
+                  padding: const EdgeInsets.only(top: 20.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -207,21 +257,40 @@ class _FixItPageState extends State<FixItPage> {
                   ),
                 ),
               if (!isLoading && solution.isNotEmpty) ...[
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.star, color: Colors.yellow),
-                      SizedBox(width: 8),
-                      Text(
-                        'Recommended Solution: \n $recommendedSolution',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                SizedBox(height: 30),
+                Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 4,
                       ),
                     ],
                   ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.star, color: Colors.yellow[700]),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Recommended Solution: \n $recommendedSolution',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16),
+                      _buildRepairOptions(),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 16),
-                _buildRepairOptions(),
               ],
             ],
           ],
@@ -234,7 +303,7 @@ class _FixItPageState extends State<FixItPage> {
     return Column(
       children: repairOptions.keys.map((option) {
         return ExpansionTile(
-          title: Text(option),
+          title: Text(option, style: TextStyle(fontWeight: FontWeight.bold)),
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
