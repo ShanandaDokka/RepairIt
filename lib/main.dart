@@ -87,25 +87,52 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Align(
-          alignment: Alignment.centerLeft, 
-          child: Row( 
+          alignment: Alignment.centerLeft,
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'Repair It',
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 18, 
+                  fontSize: 18,
                 ),
               ),
-              Icon(
-                Icons.account_circle,
-                color: Colors.black,
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'Log Out') {
+                    FirebaseAuth.instance.signOut();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LogInPage()),
+                    );
+                  }
+                },
+                icon: Icon(
+                  Icons.account_circle,
+                  color: Colors.black,
+                ),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'Log Out',
+                    child: Text(
+                      'Log Out',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                ],
+                offset: Offset(0, kToolbarHeight),  
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ],
-          )
+          ),
         ),
-        backgroundColor: Color.fromARGB(255, 128, 152, 162), 
+        backgroundColor: Color.fromARGB(255, 128, 152, 162),
       ),
       body: IndexedStack(
         index: _currentIndex,
@@ -133,33 +160,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class Page1 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 1'),
-    );
-  }
-}
-
-class Page2 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 2'),
-    );
-  }
-}
-
-class Page3 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Page 3'),
     );
   }
 }

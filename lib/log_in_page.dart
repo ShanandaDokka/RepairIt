@@ -50,7 +50,7 @@ class _LogInPageState extends State<LogInPage> {
           if (e.code == 'invalid-credential') {
             _errorMessage = 'Invalid credentials';
           } else {
-            _errorMessage = 'Hi';
+            _errorMessage = 'Authentication error';
           }
         } else {
           _errorMessage = 'An error occurred. Please try again.';

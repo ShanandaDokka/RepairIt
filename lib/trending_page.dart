@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:namer_app/gemini_api.dart';
 import 'constants.dart';
 import 'clickable_box.dart';
+import 'individual_device.dart';
 
 class TrendingPage extends StatefulWidget {
   @override
@@ -21,6 +22,8 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
   bool _hasInitialized = false;
   bool _error = false;
 
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -28,14 +31,18 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
   }
 
   Future<void> _initializeData() async {
-    if (!_hasInitialized) {
-      await _loadDevices().then((_) => _getScoreAndImage());
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _hasInitialized = true;
-        });
-      }
+    setState(() {
+      _hasInitialized = false;
+      _error = false;
+      _isLoading = true;
+    });
+
+    await _loadDevices().then((_) => _getScoreAndImage());
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+        _hasInitialized = true;
+      });
     }
   }
 
@@ -43,14 +50,20 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
   Future<String> _fetchData(String prompt) async {
     try {
       final data = await _gemini.fetchData(prompt);
+      if (mounted) {
+        setState(() {
+          _error = false;
+        });
+      }
+      if (data == null) {
+        throw Exception();
+      }
       return data.toString();
     } catch (e) {
       print('Error fetching data: $e');
-      if (mounted) {
-        setState(() {
-          _error = true;
-        });
-      }
+      setState(() {
+        _error = true;
+      });
       return 'Failed to fetch data';
     }
   }
@@ -69,7 +82,7 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
       List<String> laptopModels = laptopData.split(', ');
       laptopModels = laptopModels.map((str) => str.trim()).toList();
 
-      if (mounted) {
+      if (mounted && !_error) {
         setState(() {
           trendingCars = carModels;
           trendingLaptops = laptopModels;
@@ -96,7 +109,7 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
         String scorePromptLaptops = getScoreString(trendingLaptops);
         String scorePromptCars = getScoreString(trendingCars);
 
-        if (!_hasInitialized) {
+        if (!_hasInitialized && !_error) {
           String scorePhone = await _fetchData(scorePromptPhones);
           String scoreLaptop = await _fetchData(scorePromptLaptops);
           String scoreCar = await _fetchData(scorePromptCars);
@@ -132,6 +145,31 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
           return;
         }
       }
+    }
+  }
+
+  Future<void> _search() async {
+    final query = _searchController.text.trim();
+    
+    String prompt1 = getSingleScoreSingleInputString(query);
+    String score = await _fetchData(prompt1);
+    
+    String prompt2 = getCategoryPrompt(query);
+    String category = await _fetchData(prompt2);
+    print("SCORE IS $score AND CATEGORY IS $category");
+    category = category.trim();
+
+    if (score.isEmpty || !(category == "Phones" || category == "Cars" || category == "Laptops")) {
+      setState(() {
+        _searchController.text = "Device not found, please try again";
+      });
+    } else if (query.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => IndividualDevice(title: query.trim(), score: int.parse(score.trim()), category: category),
+        ),
+      );
     }
   }
 
@@ -249,6 +287,26 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Center(
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: "Search for a device",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                            suffixIcon: IconButton(
+                              icon: Icon(Icons.search),
+                              onPressed: _search,
+                            ),
+                          ),
+                          onSubmitted: (value) => _search(),
+                        ),
+                      ),
+                    ),
                     _buildSubheading(context, 'Phones', trendingPhones),
                     _buildSubheading(context, 'Cars', trendingCars),
                     _buildSubheading(context, 'Laptops', trendingLaptops),

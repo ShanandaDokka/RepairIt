@@ -112,9 +112,11 @@ void _moveToNextPage() {
     return true;
   }
 
-  Future<bool> _verifyCarModel(String carModel) async {
+  Future<bool> _verifyCarModel(String carInfo) async {
+    List<String> infos = carInfo.split(",");
+    infos = infos.map((str) => str.trim()).toList();
     final url = Uri.parse(
-        'https://mc-api.marketcheck.com/v2/search/car/active?api_key=DKyJAEnhbECh2hCcCNBvaSayelzQOhlH&make=$carModel');
+        'https://mc-api.marketcheck.com/v2/search/car/active?api_key=DKyJAEnhbECh2hCcCNBvaSayelzQOhlH&year=${infos[1]}&make=${infos[0]}');
 
     final response = await http.get(url);
     print("car response status code is ${response.body}");
@@ -127,7 +129,7 @@ void _moveToNextPage() {
           (responseBody['listings'] as List).isNotEmpty) {
         // Save the car model
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('car', carModel);
+        await prefs.setString('car', carInfo);
         return true;
       }
     }
@@ -211,7 +213,7 @@ void _moveToNextPage() {
             (value) => phone = value,
           ),
           _buildQuestionPage(
-            'What is your car model?',
+            'What is your car model? (Make, Year)',
             (value) => car = value,
           ),
           _buildQuestionPage(
