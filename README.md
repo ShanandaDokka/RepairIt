@@ -22,7 +22,7 @@ Our app aligns with the Right-to-Repair movement, which advocates for consumers'
 If you want to run the app on a physical iOS device, make sure your device is connected, and you have the proper developer certificates and provisioning profiles set up. If you encounter issues, consider running flutter doctor to check for any setup problems, and consult the [Flutter documentation](https://docs.flutter.dev/) for detailed guides.
 
 # Setup
-Your project is a mobile application built using Flutter, a powerful UI toolkit for creating natively compiled applicationsfrom a single codebase. The app leverages several key technologies to deliver a feature-packed experience:
+Mobile application built using Flutter, a powerful UI toolkit for creating natively compiled applicationsfrom a single codebase. The app leverages several key technologies to deliver a feature-packed experience:
 
 ## Tech Stack:
 ### Flutter:
