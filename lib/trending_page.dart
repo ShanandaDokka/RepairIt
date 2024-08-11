@@ -156,7 +156,6 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
     
     String prompt2 = getCategoryPrompt(query);
     String category = await _fetchData(prompt2);
-    print("SCORE IS $score AND CATEGORY IS $category");
     category = category.trim();
 
     if (score.isEmpty || !(category == "Phones" || category == "Cars" || category == "Laptops")) {
