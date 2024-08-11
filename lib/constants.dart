@@ -98,3 +98,7 @@ String getSingleScoreSingleInputString(String input) {
 String getCategoryPrompt(String device) {
   return "Is this a phone, laptop, or car: $device. Say \"Cars\" for car, \"Laptops\" for laptop, and \"Phones\" for phone. Include nothing else but that one word.";
 }
+
+String getFixItPrompt(String zipCode, String device, String issue) {
+  return "My $device device has this issue: $issue. I live in this zip-code $zipCode, and have three options for repair: at-home, independent repair shops, or manufacturer repair. First, list the one you think is best only writing the phrase \"at-home repair\", \"independent business\", or \"manufacturer repair\". Then, in a new paragraph for each, write a small paragraph about the cost/convenience of each option respectively. Make the answers specific to the device and issue and zip code.";
+}

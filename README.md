@@ -7,12 +7,13 @@ Our app aligns with the Right-to-Repair movement, which advocates for consumers'
 * Xcode Installed and Running: Ensure Xcode is installed and up to date. We recommend running the iPhone 15 Pro simulator on your machine.
 * Flutter installed locally: Make sure Flutter is installed and properly set up in your environment. Verify by running flutter doctor to ensure all dependencies are met. 
 * API key for Gemini: Obtain your Gemini API key, which will be used for fetching data within the app.
+* API key for google maps: This is not required, but we will not be able to provide specific repair shops near you without this API key. 
 
 ## Demo
 1. Start by cloning this repo on your local machine:
 * Open your terminal and run the following command to clone the repo: `git clone https://github.com/ShanandaDokka/RepairIt.git`
 2. At the root level of the repo, create a .env file. 
-3. In the .env file, add the line `API_KEY=<YOUR API KEY>` and replace `<YOUR API KEY>` with your API key.
+3. In the .env file, add the line `API_KEY=<YOUR API KEY>` followed by `GOOGLE_API_KEY='YOUR GOOGLE API KEY` and replace `<YOUR API KEY>` and `YOUR GOOGLE API KEY` with your respective API keys.
 4. Install dependencies: open the terminal and ensure all the Flutter dependencies are installed by running `flutter pub get`
 4. Clean any previous builds and create a fresh one by running `flutter clean` followed by `flutter build ios`. 
 5. Finally, run `flutter run` and ensure that the app opens on your simulator. 
@@ -43,6 +44,9 @@ UI Components: The app includes custom widgets, like ListTiles and buttons, to d
 
 ### Gemini API Integration:
 * The app integrates with the Gemini AI API, which is used to fetch data such as device scores. The API interaction enables the app to provide dynamic content and insights, like repairability scores, based on user inputs.
+
+### Google Maps API Integration:
+* The app integrates with the Google Maps API, which is used to fetch data on nearby repair shops for devices the user requires fixing. The API interaction enables the app to provide dynamic content and insights.
 
 # Outline
 - `RepairIt/ios/Runner`

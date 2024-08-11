@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:namer_app/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert'; // For jsonEncode
-import 'package:http/http.dart' as http; // For making HTTP requests
+import 'dart:convert'; 
+import 'package:http/http.dart' as http; 
 import 'package:namer_app/gemini_api.dart';
 
 class FixItPage extends StatefulWidget {
@@ -45,6 +47,7 @@ class _FixItPageState extends State<FixItPage> {
   String solution = ''; // Stores the solution text
   String recommendedSolution = ''; // Stores the recommended solution
   Map<String, String> repairOptions = {}; // Stores repair options
+  Map<String, String> repairShopOptions = {}; // stores nearby repair shops
 
   @override
   void initState() {
@@ -79,15 +82,13 @@ class _FixItPageState extends State<FixItPage> {
       repairOptions = {};
     });
 
-    String repairSolution = await _fetchData("My $device device has this issue: $issue. I live in this zip-code $zipCode, and have three options for repair: at-home, independent repair shops, or manufacturer repair. First, list the one you think is best only writing the phrase \"at-home repair\", \"independent business\", or \"manufacturer repair\". Then, in a new paragraph for each, write a small paragraph about the cost/convenience of each option respectively. Make the answers specific to the device and issue and zip code.");
+    String repairSolution = await _fetchData(getFixItPrompt(zipCode, device, issue));
 
-    // Simulated response parsing
     setState(() {
       solution = repairSolution ?? 'No solution found.';
       List<String> fetchedSolutions = repairSolution.split("\n");
       fetchedSolutions = fetchedSolutions.map((str) => str.trim()).toList();
 
-      // Example of a recommended solution
       recommendedSolution = fetchedSolutions[0];
       repairOptions = {
         'At Home Repair': fetchedSolutions[2],
@@ -98,7 +99,6 @@ class _FixItPageState extends State<FixItPage> {
       isLoading = false;
     });
 
-    // Scroll down just below the submit button
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final RenderBox submitButtonBox = _submitButtonKey.currentContext!.findRenderObject() as RenderBox;
       final position = submitButtonBox.localToGlobal(Offset.zero).dy;
@@ -108,6 +108,64 @@ class _FixItPageState extends State<FixItPage> {
         curve: Curves.easeInOut,
       );
     });
+  }
+
+  Future<void> _getRepairShopsFromZip() async {
+    const int radius = 5000;
+    String apiKey = dotenv.env['GOOGLE_API_KEY'] ?? '';
+    String searchQuery = '$selectedDevice repair shops';
+    
+    final String geoCodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json?address=$zipCode&key=$apiKey';
+
+    try {
+      final geoCodingResponse = await http.get(Uri.parse(geoCodingUrl));
+      if (geoCodingResponse.statusCode == 200) {
+        final geoCodingData = json.decode(geoCodingResponse.body);
+        print('Geocoding API Response: ${geoCodingData}'); 
+        
+        if (geoCodingData['status'] == 'OK') {
+          final location = geoCodingData['results'][0]['geometry']['location'];
+          final latitude = location['lat'];
+          final longitude = location['lng'];
+          
+          final String locationStr = '$latitude,$longitude';
+          final String nearbySearchUrl = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$locationStr&radius=$radius&type=repair&keyword=$searchQuery&key=$apiKey';
+          
+          final response = await http.get(Uri.parse(nearbySearchUrl));
+          if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            print('Nearby Search API Response: ${data}'); 
+            
+            final results = data['results'] as List;
+            Map<String, String> repairShops = {};
+            
+            int count = 0;
+            for (var result in results) {
+              final shopName = result['name'];
+              final address = result['vicinity'] ?? 'Address not available'; 
+              repairShops[shopName] = address;
+              count += 1;
+              if (count == 5) {
+                break;
+              }
+              print("SHOP NAME: $shopName, ADDRESS: $address");
+            }
+
+            setState(() {
+              repairShopOptions = repairShops;
+            });
+          } else {
+            print('Failed to load repair shops. Status code: ${response.statusCode}');
+          }
+        } else {
+          print('Failed to get coordinates. Status: ${geoCodingData['status']}');
+        }
+      } else {
+        print('Failed to get coordinates. Status code: ${geoCodingResponse.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   void _selectProblemCategory(String? newValue) {
@@ -122,7 +180,7 @@ class _FixItPageState extends State<FixItPage> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: SingleChildScrollView(
-        controller: _scrollController, // Attach the ScrollController
+        controller: _scrollController, 
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,9 +324,9 @@ class _FixItPageState extends State<FixItPage> {
                       String issue = isCustomProblem
                           ? customProblemDescription
                           : selectedProblemCategory!;
+                      _getRepairShopsFromZip();
                       _getHelpForDevice(selectedDevice!, issue);
                     } else {
-                      // Show an error message if zip code is empty
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Please enter a zip code')),
                       );
@@ -343,11 +401,49 @@ class _FixItPageState extends State<FixItPage> {
     return Column(
       children: repairOptions.keys.map((option) {
         return ExpansionTile(
-          title: Text(option, style: TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(option, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(repairOptions[option] ?? ''),
+              child: option == 'Independent Repair Shop'
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Nearby You:',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        SizedBox(height: 8),
+                        ...repairShopOptions.entries.map((entry) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 4.0),
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: '• ',
+                                    style: TextStyle(fontSize: 16, color: Colors.black),
+                                  ),
+                                  TextSpan(
+                                    text: '${entry.key} | ${entry.value}',
+                                    style: TextStyle(fontSize: 16, color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        SizedBox(height: 10),
+                        Text(
+                          (repairOptions[option] ?? '').replaceAll("*", ""),
+                          style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+                        ),
+                      ],
+                    )
+                  : Text(
+                      (repairOptions[option] ?? '').replaceAll("*", ""),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+                    ),
             ),
           ],
         );
