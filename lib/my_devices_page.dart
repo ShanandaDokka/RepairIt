@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:namer_app/gemini_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'constants.dart';
+import 'individual_device.dart';
 
 class MyDevicesPage extends StatefulWidget {
   @override
@@ -41,6 +44,47 @@ class _MyDevicesPageState extends State<MyDevicesPage> {
     await prefs.setStringList('additionalDevices', additionalDevices);
     _loadDevices();
   }
+
+  final GeminiApi _gemini = GeminiApi();
+  Future<String> _fetchData(String prompt) async {
+    try {
+      final data = await _gemini.fetchData(prompt);
+      if (data == null) {
+        throw Exception();
+      }
+      return data.toString();
+    } catch (e) {
+      print('Error fetching data: $e');
+      return 'Failed to fetch data';
+    }
+  }
+
+  Future<void> _getScorePage(String title) async {
+    String prompt1 = getSingleScoreSingleInputString(title);
+    String score = await _fetchData(prompt1);
+
+    String prompt2 = getCategoryPrompt(title);
+    String category = await _fetchData(prompt2);
+    category = category.trim();
+
+    if (score.isNotEmpty) {
+      int? scoreValue = int.tryParse(score.trim());
+      
+      if (scoreValue != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => IndividualDevice(title: title, score: scoreValue, category: category),
+          ),
+        );
+      } else {
+        print("Error: The fetched score is not a valid integer.");
+      }
+    } else {
+      print("Error: Fetched score is empty.");
+    }
+  }
+
 
   void _showAddDeviceDialog() {
     showDialog(
@@ -126,7 +170,8 @@ class _MyDevicesPageState extends State<MyDevicesPage> {
                       leading: Icon(iconData, size: 30),
                       contentPadding: EdgeInsets.all(16),
                       onTap: () {
-                        // TODO: Navigate to device details page
+                        String title = devices[index]['name']!; 
+                        _getScorePage(title);
                       },
                     ),
                   ),
