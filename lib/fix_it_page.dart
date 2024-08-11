@@ -16,6 +16,8 @@ class _FixItPageState extends State<FixItPage> {
   bool isCustomProblem = false;
   String customProblemDescription = '';
   final GeminiApi _gemini = GeminiApi();
+  String zipCode = '';
+
 
   final ScrollController _scrollController = ScrollController(); // Scroll controller
   final GlobalKey _submitButtonKey = GlobalKey(); // GlobalKey for the submit button
@@ -77,7 +79,7 @@ class _FixItPageState extends State<FixItPage> {
       repairOptions = {};
     });
 
-    String repairSolution = await _fetchData("My $device device has this issue: $issue. I have three options for repair: at-home, independent repair shops, or manufacturer repair. First, list the one you think is best only writing the phrase \"at-home repair\", \"independent business\", or \"manufacturer repair\". Then, in a new paragraph for each, write a small paragraph about the cost/convenience of each option respectively. Make the answers specific to the device and issue.");
+    String repairSolution = await _fetchData("My $device device has this issue: $issue. I live in this zip-code $zipCode, and have three options for repair: at-home, independent repair shops, or manufacturer repair. First, list the one you think is best only writing the phrase \"at-home repair\", \"independent business\", or \"manufacturer repair\". Then, in a new paragraph for each, write a small paragraph about the cost/convenience of each option respectively. Make the answers specific to the device and issue and zip code.");
 
     // Simulated response parsing
     setState(() {
@@ -131,6 +133,38 @@ class _FixItPageState extends State<FixItPage> {
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.blueAccent,
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Enter your zip code:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 10),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    zipCode = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: "Enter zip code",
+                  border: InputBorder.none,
+                ),
+                keyboardType: TextInputType.number,
               ),
             ),
             SizedBox(height: 20),
@@ -228,11 +262,16 @@ class _FixItPageState extends State<FixItPage> {
                 child: ElevatedButton(
                   key: _submitButtonKey, // Key for the submit button
                   onPressed: () {
-                    if (selectedProblemCategory != null) {
+                    if (selectedProblemCategory != null && zipCode.isNotEmpty) {
                       String issue = isCustomProblem
                           ? customProblemDescription
                           : selectedProblemCategory!;
                       _getHelpForDevice(selectedDevice!, issue);
+                    } else {
+                      // Show an error message if zip code is empty
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Please enter a zip code')),
+                      );
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -292,6 +331,7 @@ class _FixItPageState extends State<FixItPage> {
                   ),
                 ),
               ],
+              
             ],
           ],
         ),
