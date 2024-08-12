@@ -61,7 +61,7 @@ void _moveToNextPage() {
       headers: {
         'query': laptopModel.trim(),
         'keepCasing': 'true',
-        'Authorization': dotenv.env['API_KEY']!, 
+        'Authorization': dotenv.env['API_KEY']!, // env 
       },
       body: jsonEncode({
         'category': 'laptop',
