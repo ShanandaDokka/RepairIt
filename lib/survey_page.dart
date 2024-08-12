@@ -56,23 +56,18 @@ void _moveToNextPage() {
 }
 
   Future<bool> _verifyLaptopModel(String laptopModel) async {
+    final encodedLaptopModel = Uri.encodeComponent(laptopModel.trim());
     final response = await http.post(
-      Uri.parse('https://api.techspecs.io/v4/product/search'),
+      Uri.parse('https://api.techspecs.io/v4/product/search?query=${encodedLaptopModel}&keepCasing=true'),
       headers: {
-        'query': laptopModel.trim(),
-        'keepCasing': 'true',
-        'Authorization': dotenv.env['API_KEY']!, // env 
+        'Authorization': dotenv.env['TECHSPEC_API_KEY']!, // env 
       },
       body: jsonEncode({
         'category': 'laptop',
       }),
     );
-    print("status code is ${response.statusCode}");
-    print("response is ${response.body}");
     if (response.statusCode == 200) {
       final responseBody = json.decode(response.body);
-      print("parsed response body is $responseBody");
-      print("ITEMS IS ${responseBody['data']['items']}");
       if (responseBody != null && responseBody['data']['items'] != null && responseBody['data']['items'].isNotEmpty) {
         // Save the laptop model
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -80,47 +75,46 @@ void _moveToNextPage() {
         return true;
       }
     }
-    // TODO: change this after paying for API
-    return true;
+    return false;
   }
 
   Future<bool> _verifyPhoneModel(String phoneModel) async {
+    final encodedPhoneModel = Uri.encodeComponent(phoneModel.trim());
     final response = await http.post(
-      Uri.parse('https://api.techspecs.io/v4/product/search'),
+      Uri.parse('https://api.techspecs.io/v4/product/search?query=${encodedPhoneModel}&keepCasing=true'),
       headers: {
-        'query': phoneModel.trim(),
-        'keepCasing': 'true',
-        'Authorization': dotenv.env['API_KEY']!, 
+        'Authorization': dotenv.env['TECHSPEC_API_KEY']!, 
       },
       body: jsonEncode({
-        'category': 'phone',
+        'category': 'smartphone',
       }),
     );
-    print("status code is ${response.statusCode}");
-    print("response is ${response.body}");
     if (response.statusCode == 200) {
       final responseBody = json.decode(response.body);
-      print("parsed response body is $responseBody");
-      print("ITEMS IS ${responseBody['data']['items']}");
       if (responseBody != null && responseBody['data']['items'] != null && responseBody['data']['items'].isNotEmpty) {
-        // Save the laptop model
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('phone', phoneModel);
         return true;
       }
     }
-    // TODO: change this after paying for API
-    return true;
+    return false;
   }
 
   Future<bool> _verifyCarModel(String carInfo) async {
     List<String> infos = carInfo.split(",");
+
     infos = infos.map((str) => str.trim()).toList();
+    if (infos.length < 2) {
+      _showErrorDialogWithMessage('Please provide the car make and year.');
+      return false;
+    }
+
     final url = Uri.parse(
-        'https://mc-api.marketcheck.com/v2/search/car/active?api_key=DKyJAEnhbECh2hCcCNBvaSayelzQOhlH&year=${infos[1]}&make=${infos[0]}');
+      'https://mc-api.marketcheck.com/v2/search/car/active?api_key=DKyJAEnhbECh2hCcCNBvaSayelzQOhlH&year=${infos[1]}&make=${infos[0]}');
 
     final response = await http.get(url);
     print("car response status code is ${response.body}");
+
     if (response.statusCode == 200) {
       final responseBody = json.decode(response.body);
       print("Parsed response body: $responseBody");
@@ -134,7 +128,28 @@ void _moveToNextPage() {
         return true;
       }
     }
+
     return false;
+  }
+
+  void _showErrorDialogWithMessage(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showErrorDialog() {
