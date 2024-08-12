@@ -8,6 +8,7 @@ Our app aligns with the Right-to-Repair movement, which advocates for consumers'
 * Flutter installed locally: Make sure Flutter is installed and properly set up in your environment. Verify by running flutter doctor to ensure all dependencies are met. 
 * API key for Gemini: Obtain your Gemini API key, which will be used for fetching data within the app.
 * API key for google maps: This is not required, but we will not be able to provide specific repair shops near you without this API key. 
+* API key for techspecs: This is not required, but the app calls techspec API to verify that laptop and phone models inputted by the user are valid (throws error otherwise). We do not provide our key to the public. 
 
 ## Demo
 1. Start by cloning this repo on your local machine:
@@ -47,6 +48,9 @@ UI Components: The app includes custom widgets, like ListTiles and buttons, to d
 
 ### Google Maps API Integration:
 * The app integrates with the Google Maps API, which is used to fetch data on nearby repair shops for devices the user requires fixing. The API interaction enables the app to provide dynamic content and insights.
+
+### Techspecs API Integration:
+* The app heavily relies on user input to analyze devices the user owns. Users can input jibberish and it is important to validate their inputs. We call the TechSpecs API to verify that any device models they put in exist, and throw an error otherwise. Refer to the TechSpecs API documentation [here](https://techspecs.readme.io/reference/getting-started-with-your-api-1).
 
 # Outline
 - `RepairIt/ios/Runner`
