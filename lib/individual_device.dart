@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:namer_app/gemini_api.dart';
 import 'constants.dart';
 
@@ -16,8 +17,8 @@ class IndividualDevice extends StatefulWidget {
 class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticKeepAliveClientMixin {
   bool _isQuestion1Expanded = false;
   bool _isQuestion2Expanded = false;
-  bool _isQuestion3Expanded = false; 
-  bool _isQuestion4Expanded = false; 
+  bool _isQuestion3Expanded = false;
+  bool _isQuestion4Expanded = false;
   bool _hasInitialized = false;
 
   String whyExplanation = "";
@@ -27,6 +28,14 @@ class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticK
   String question4Answer = "";
 
   final ScrollController _scrollController = ScrollController();
+  final Map<String, String> _scoreDescriptions = {
+    '1 star': 'Hard to repair at home, expensive repair costs',
+    '2 star': 'Challenges with home repair, expensive repair costs',
+    '3 star': 'Repair at home with effort, moderate repair costs',
+    '4 star': 'Relatively easy to repair at home, reasonable repair costs',
+    '5 star': 'Generally easily repairable at home, low repair costs',
+  };
+  String _selectedScoreDescription = "";
 
   @override
   bool get wantKeepAlive => true;
@@ -61,8 +70,6 @@ class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticK
       } catch (e) {
         print('Error loading devices: $e');
       }
-    } else {
-      return;
     }
   }
 
@@ -83,19 +90,21 @@ class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticK
         toolbarHeight: 100,
         title: Align(
           alignment: Alignment.topRight,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                widget.title,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-              ),
-              SizedBox(height: 2),
-              Text(
-                'Repairability',
-                style: TextStyle(fontSize: 16, color: Colors.black54),
-              ),
-            ],
+          child: Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.title,
+                  style: GoogleFonts.lato(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'Repairability',
+                  style: GoogleFonts.lato(fontSize: 16, color: Colors.black54),
+                ),
+              ],
+            ),
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -107,7 +116,7 @@ class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticK
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());  
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error loading data'));  
+            return Center(child: Text('Error loading data', style: GoogleFonts.lato(fontSize: 16, color: Colors.red)));  
           } else {
             return _buildContent(context);  
           }
@@ -129,36 +138,51 @@ class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticK
             children: [
               Center(
                 child: Image.asset(
-                  determineImage(widget.score), 
-                  width: MediaQuery.of(context).size.width * 0.6, 
+                  determineImage(widget.score),
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  fit: BoxFit.contain,
                 ),
               ),
               SizedBox(height: 20),
               Text(
                 'Score',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: GoogleFonts.lato(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
               Text(
                 'This ${determineCategory(widget.category)} repairability score: ${widget.score}/5 stars',
-                style: TextStyle(fontSize: 17),
+                style: GoogleFonts.lato(fontSize: 17),
               ),
-              SizedBox(height: 8),
-              _buildScoringSystem(),
               SizedBox(height: 20),
-              Text(
-                'Why?',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                whyExplanation,
-                style: TextStyle(fontSize: 18),
+              _buildScoreCategories(),
+              SizedBox(height: 20),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  return Container(
+                    width: constraints.maxWidth,
+                    color: Colors.black,
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Why?',
+                          style: GoogleFonts.lato(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          whyExplanation,
+                          style: GoogleFonts.lato(fontSize: 18, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
               SizedBox(height: 20),
               Text(
                 'Learn More',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: GoogleFonts.lato(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
               _buildQuestionSection(
@@ -219,61 +243,81 @@ class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticK
     );
   }
 
-  Widget _buildScoringSystem() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Scoring System',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 8),
-        Text(
-          '1: Poor - Hard to repair at home, expensive repair costs',
-          style: TextStyle(fontSize: 10),
-        ),
-        Text(
-          '2: Fair - Some challenges with home repair, expensive repair costs',
-          style: TextStyle(fontSize: 10),
-        ),
-        Text(
-          '3: Good - Can be repaired at home with effort, moderate repair costs',
-          style: TextStyle(fontSize: 10),
-        ),
-        Text(
-          '4: Very Good - Relatively easy to repair at home, reasonable repair costs',
-          style: TextStyle(fontSize: 10),
-        ),
-        Text(
-          '5: Excellent - Generally easily repairable at home, low repair costs',
-          style: TextStyle(fontSize: 10),
-        ),
-        SizedBox(height: 20),
-        Center(
-          child: ElevatedButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return Dialog(
-                    insetPadding: EdgeInsets.all(10),
-                    child: InteractiveViewer(
-                      panEnabled: true,
-                      minScale: 0.5,
-                      maxScale: 2,
-                      child: Image.asset(
-                        'img/repairIt_rubric.png', 
-                        fit: BoxFit.contain,
+  Widget _buildScoreCategories() {
+    return Container(
+      color: Color.fromARGB(255, 121, 117, 117), 
+      padding: const EdgeInsets.all(16.0), 
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center, 
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center, 
+              children: _scoreDescriptions.keys.map((category) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 4.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedScoreDescription = _scoreDescriptions[category]!;
+                      });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: const Color.fromARGB(255, 21, 21, 21),
+                      ),
+                      child: Center(
+                        child: Text(
+                          category,
+                          style: GoogleFonts.lato(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
                       ),
                     ),
-                  );
-                },
-              );
-            },
-            child: Text('View Our Rubric'),
+                  ),
+                );
+              }).toList(),
+            ),
           ),
-        ),
-      ],
+          SizedBox(height: 8),
+          _selectedScoreDescription.isNotEmpty ?
+            Text(
+              _selectedScoreDescription,
+              style: GoogleFonts.lato(fontSize: 14, color: Colors.white), 
+            ) :  
+            Text(
+              'Click on a star above',
+              style: GoogleFonts.lato(fontSize: 14, color: Colors.white), 
+            ),    
+          SizedBox(height: 20),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Dialog(
+                      insetPadding: EdgeInsets.all(10),
+                      child: InteractiveViewer(
+                        panEnabled: true,
+                        minScale: 0.5,
+                        maxScale: 2,
+                        child: Image.asset(
+                          'img/repairIt_rubric.png', 
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+              child: Text('View Our Rubric', style: TextStyle(color: Colors.black)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -284,29 +328,33 @@ class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticK
         InkWell(
           onTap: toggleExpansion,
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start, 
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
-                Icons.keyboard_arrow_down_sharp,
-                color: Colors.black,
+                Icons.keyboard_arrow_down,
+                size: 24,
+                color: Colors.blueGrey,
               ),
-              Expanded( 
+              SizedBox(width: 8),
+              Expanded(
                 child: Text(
                   question,
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
+                  softWrap: true,  
+                  overflow: TextOverflow.visible, 
                 ),
               ),
             ],
           ),
         ),
-        if (isExpanded)
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Text(
-              answer,
-              style: TextStyle(fontSize: 16),
-            ),
+        if (isExpanded) ...[
+          SizedBox(height: 8),
+          Text(
+            answer,
+            style: GoogleFonts.lato(fontSize: 16),
           ),
+        ],
+        Divider(color: Colors.grey.shade300, thickness: 1), 
       ],
     );
   }

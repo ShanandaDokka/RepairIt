@@ -410,7 +410,7 @@ class _FixItPageState extends State<FixItPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Nearby You:',
+                          'Near You:',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                         SizedBox(height: 8),

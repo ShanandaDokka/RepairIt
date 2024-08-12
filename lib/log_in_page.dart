@@ -14,7 +14,7 @@ class _LogInPageState extends State<LogInPage> {
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Color backgroundColor = Color(0xFFE6DFF1);
-  final Color accentColor = Colors.white; // Light lavender
+  final Color accentColor = Colors.white; 
   final Color textColor = Colors.black;
 
   String _errorMessage = '';
@@ -154,14 +154,6 @@ class _LogInPageState extends State<LogInPage> {
                         fontSize: 18, fontWeight: FontWeight.bold)),
               ),
               SizedBox(height: 10),
-              // Text(
-              //   'OR',
-              //   style: TextStyle(
-              //     color: textColor,
-              //     fontSize: 16,
-              //   ),
-              //   textAlign: TextAlign.center,
-              // ),
               TextButton(
                 onPressed: _navigateToSignUp,
                 style: TextButton.styleFrom(

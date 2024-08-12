@@ -92,9 +92,9 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Repair It',
+                'Repair It.',
                 style: TextStyle(
-                  color: Colors.black,
+                  color: Colors.white,
                   fontSize: 18,
                 ),
               ),
@@ -102,15 +102,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 onSelected: (value) {
                   if (value == 'Log Out') {
                     FirebaseAuth.instance.signOut();
-                    Navigator.pushReplacement(
+                    Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => LogInPage()),
+                      (route) => false,  
                     );
                   }
                 },
                 icon: Icon(
                   Icons.account_circle,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
                 itemBuilder: (context) => [
                   PopupMenuItem(
@@ -119,12 +120,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       'Log Out',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.blue,
+                        color: Colors.black,
                       ),
                     ),
                   ),
                 ],
-                offset: Offset(0, kToolbarHeight),  
+                offset: Offset(0, kToolbarHeight),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -132,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
-        backgroundColor: Color.fromARGB(255, 128, 152, 162),
+        backgroundColor: Colors.black,
       ),
       body: IndexedStack(
         index: _currentIndex,

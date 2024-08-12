@@ -231,14 +231,15 @@ class _TrendingPageState extends State<TrendingPage>
   }
 
   @override
-  Widget build(BuildContext context) {
-    final scrollController = ScrollController();
-    super.build(context);
-    return Scaffold(
-      appBar: AppBar(
-        
-        backgroundColor: backgroundColor,
-        title: Column(
+Widget build(BuildContext context) {
+  final scrollController = ScrollController();
+  super.build(context);
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: backgroundColor,
+      title: Padding(
+        padding: const EdgeInsets.only(top: 20.0), 
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -252,21 +253,26 @@ class _TrendingPageState extends State<TrendingPage>
                 SizedBox(width: 8),
                 Text(
                   'Trending',
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black),
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
               ],
             ),
             SizedBox(height: 5),
             Flexible(
               child: Text(
-                
                 trendingPageSubtitle,
-                style: TextStyle(fontSize: 16, color: Colors.black54),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                ),
                 overflow: TextOverflow.visible,
               ),
             ),
             SizedBox(height: 15),
-
             Center(
               child: TextField(
                 controller: _searchController,
@@ -285,54 +291,54 @@ class _TrendingPageState extends State<TrendingPage>
                 onSubmitted: (value) => _search(),
               ),
             ),
-           SizedBox(height: 30),
-
+            SizedBox(height: 30),
           ],
         ),
-        toolbarHeight: 165,
-              ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : _error
-              ? Center(
-                  child: Container(
-                    padding: EdgeInsets.all(16.0),
-                    margin: EdgeInsets.symmetric(horizontal: 20.0),
-                    decoration: BoxDecoration(
-                      color: Colors.red[50],
-                      borderRadius: BorderRadius.circular(8.0),
-                      border: Border.all(color: Colors.red, width: 2.0),
-                    ),
-                    child: Text(
-                      resourceOverloadError,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.red[800],
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+      ),
+      toolbarHeight: 200, 
+    ),
+    body: _isLoading
+        ? Center(child: CircularProgressIndicator())
+        : _error
+            ? Center(
+                child: Container(
+                  padding: EdgeInsets.all(16.0),
+                  margin: EdgeInsets.symmetric(horizontal: 20.0),
+                  decoration: BoxDecoration(
+                    color: Colors.red[50],
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: Colors.red, width: 2.0),
                   ),
-                )
-              : Scrollbar(
-                  thumbVisibility: true,
-                  controller: scrollController,
-                  radius: Radius.circular(8),
-                  child: SingleChildScrollView(
-                    controller: scrollController,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                        ),
-                        _buildSubheading(context, '  Phones', trendingPhones),
-                        _buildSubheading(context, '  Cars', trendingCars),
-                        _buildSubheading(context, '  Laptops', trendingLaptops),
-                      ],
+                  child: Text(
+                    resourceOverloadError,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.red[800],
+                      fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
+              )
+            : Scrollbar(
+                thumbVisibility: true,
+                controller: scrollController,
+                radius: Radius.circular(8),
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                      ),
+                      _buildSubheading(context, '  Phones', trendingPhones),
+                      _buildSubheading(context, '  Cars', trendingCars),
+                      _buildSubheading(context, '  Laptops', trendingLaptops),
+                    ],
+                  ),
+                ),
+              ),
       backgroundColor: Colors.white,
     );
   }

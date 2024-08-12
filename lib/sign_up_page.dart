@@ -4,7 +4,6 @@ import 'package:namer_app/log_in_page.dart';
 import 'package:namer_app/survey_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 class SignUpPage extends StatefulWidget {
   @override
   _SignUpPageState createState() => _SignUpPageState();
@@ -14,8 +13,8 @@ class _SignUpPageState extends State<SignUpPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-    final Color backgroundColor = Color(0xFFE6DFF1);
-  final Color accentColor = Colors.white; // Light lavender
+  final Color backgroundColor = Color(0xFFE6DFF1);
+  final Color accentColor = Colors.white; 
   final Color textColor = Colors.black;
 
   Future<void> _signUp() async {
@@ -26,48 +25,47 @@ class _SignUpPageState extends State<SignUpPage> {
       );
       print('User signed up: ${userCredential.user!.uid}');
       if (mounted) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SurveyPage(onSurveyCompleted: () {
-            Navigator.pushReplacement(
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => LogInPage()),
+              (route) => false, 
             );
           })),
         );
       }
     } catch (e) {
-     showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-
-          content: Text('This email is already in use.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('This email is already in use.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sign Up', style: TextStyle(color: textColor)),
-        backgroundColor: backgroundColor, // White background for the AppBar
-        iconTheme: IconThemeData(color: textColor), // Black icon color
+        backgroundColor: backgroundColor, 
+        iconTheme: IconThemeData(color: textColor), 
       ),
-      backgroundColor: backgroundColor, // Set the background color for the page
+      backgroundColor: backgroundColor, 
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -139,8 +137,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: textColor, // Black background color for the button
-                  foregroundColor: accentColor, // White text color
+                  backgroundColor: textColor,
+                  foregroundColor: accentColor,
                   padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
