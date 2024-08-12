@@ -90,21 +90,19 @@ class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticK
         toolbarHeight: 100,
         title: Align(
           alignment: Alignment.topRight,
-          child: Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.title,
-                  style: GoogleFonts.lato(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-                ),
-                SizedBox(height: 2),
-                Text(
-                  'Repairability',
-                  style: GoogleFonts.lato(fontSize: 16, color: Colors.black54),
-                ),
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.title,
+                style: GoogleFonts.lato(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+              ),
+              SizedBox(height: 2),
+              Text(
+                'Repairability',
+                style: GoogleFonts.lato(fontSize: 16, color: Colors.black54),
+              ),
+            ],
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -245,7 +243,7 @@ class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticK
 
   Widget _buildScoreCategories() {
     return Container(
-      color: Color.fromARGB(255, 121, 117, 117), 
+      color: Color.fromARGB(255, 188, 178, 223), 
       padding: const EdgeInsets.all(16.0), 
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center, 
@@ -267,12 +265,12 @@ class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticK
                       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-                        color: const Color.fromARGB(255, 21, 21, 21),
+                        color: Color(0xFFE6DFF1),
                       ),
                       child: Center(
                         child: Text(
                           category,
-                          style: GoogleFonts.lato(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                          style: GoogleFonts.lato(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black),
                         ),
                       ),
                     ),
@@ -285,15 +283,21 @@ class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticK
           _selectedScoreDescription.isNotEmpty ?
             Text(
               _selectedScoreDescription,
-              style: GoogleFonts.lato(fontSize: 14, color: Colors.white), 
+              style: GoogleFonts.lato(fontSize: 14, color: Colors.black), 
             ) :  
             Text(
               'Click on a star above',
-              style: GoogleFonts.lato(fontSize: 14, color: Colors.white), 
+              style: GoogleFonts.lato(fontSize: 14, color: Colors.black), 
             ),    
           SizedBox(height: 20),
           Center(
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14), backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
               onPressed: () {
                 showDialog(
                   context: context,
@@ -313,7 +317,7 @@ class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticK
                   },
                 );
               },
-              child: Text('View Our Rubric', style: TextStyle(color: Colors.black)),
+              child: Text('View Our Rubric', style: TextStyle(color: Colors.white)),
             ),
           ),
         ],
