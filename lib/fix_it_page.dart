@@ -177,58 +177,114 @@ class _FixItPageState extends State<FixItPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: SingleChildScrollView(
-        controller: _scrollController, 
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Fix It',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
-              ),
+  return Scaffold(
+    backgroundColor: Color(0xFFE6DFF1), // Light lavender background
+    body: SingleChildScrollView(
+      controller: _scrollController, 
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Fix It',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Color(0xff6750a4), // Deep purple for the main title
             ),
-            SizedBox(height: 20),
-            Text(
-              'Enter your zip code:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 20),
+          Text(
+            'Enter your zip code:',
+            style: TextStyle(
+              fontSize: 18, 
+              fontWeight: FontWeight.w600,
+              color: Colors.black, // Black for subheadings
             ),
-            SizedBox(height: 10),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 4,
-                  ),
-                ],
-              ),
-              child: TextField(
-                onChanged: (value) {
-                  setState(() {
-                    zipCode = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: "Enter zip code",
-                  border: InputBorder.none,
+          ),
+          SizedBox(height: 10),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 4,
                 ),
-                keyboardType: TextInputType.number,
-              ),
+              ],
             ),
+            child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  zipCode = value;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: "Enter zip code",
+                border: InputBorder.none,
+                hintStyle: TextStyle(color: Color(0xff6750a4)), // Deep purple hint text
+              ),
+              keyboardType: TextInputType.number,
+            ),
+          ),
+          SizedBox(height: 20),
+          Text(
+            'What device do you need help with?',
+            style: TextStyle(
+              fontSize: 18, 
+              fontWeight: FontWeight.w600,
+              color: Colors.black, // Black for subheadings
+            ),
+          ),
+          SizedBox(height: 10),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+            child: DropdownButton<String>(
+              isExpanded: true,
+              underline: SizedBox(),
+              hint: Text(
+                'Select a device',
+                style: TextStyle(color: Color(0xff6750a4)), // Deep purple hint text
+              ),
+              value: selectedDevice,
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedDevice = newValue;
+                  selectedProblemCategory = null; // Reset problem category when device changes
+                  isCustomProblem = false; // Reset custom problem flag
+                });
+              },
+              items: devices.map<DropdownMenuItem<String>>((Map<String, String> device) {
+                return DropdownMenuItem<String>(
+                  value: device['name'],
+                  child: Text(device['name']!),
+                );
+              }).toList(),
+            ),
+          ),
+          if (selectedDevice != null) ...[
             SizedBox(height: 20),
             Text(
-              'What device do you need help with?',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              'What\'s wrong with the device?',
+              style: TextStyle(
+                fontSize: 18, 
+                fontWeight: FontWeight.w600,
+                color: Colors.black, // Black for subheadings
+              ),
             ),
             SizedBox(height: 10),
             Container(
@@ -238,7 +294,7 @@ class _FixItPageState extends State<FixItPage> {
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
+                    color: Colors.black.withOpacity(0.2),
                     spreadRadius: 2,
                     blurRadius: 4,
                   ),
@@ -247,207 +303,176 @@ class _FixItPageState extends State<FixItPage> {
               child: DropdownButton<String>(
                 isExpanded: true,
                 underline: SizedBox(),
-                hint: Text('Select a device'),
-                value: selectedDevice,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedDevice = newValue;
-                    selectedProblemCategory = null; // Reset problem category when device changes
-                    isCustomProblem = false; // Reset custom problem flag
-                  });
-                },
-                items: devices.map<DropdownMenuItem<String>>((Map<String, String> device) {
+                hint: Text(
+                  'Select a problem category',
+                  style: TextStyle(color: Color(0xff6750a4)), // Deep purple hint text
+                ),
+                value: selectedProblemCategory,
+                onChanged: _selectProblemCategory,
+                items: problemCategories.map<DropdownMenuItem<String>>((String category) {
                   return DropdownMenuItem<String>(
-                    value: device['name'],
-                    child: Text(device['name']!),
+                    value: category,
+                    child: Text(category),
                   );
                 }).toList(),
               ),
             ),
-            if (selectedDevice != null) ...[
-              SizedBox(height: 20),
-              Text(
-                'What\'s wrong with the device?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
+            if (isCustomProblem) ...[
               SizedBox(height: 10),
+              TextField(
+                onChanged: (value) {
+                  customProblemDescription = value;
+                },
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: "Describe the problem...",
+                  hintStyle: TextStyle(color: Color(0xff6750a4)), // Deep purple hint text
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                maxLines: 3,
+              ),
+            ],
+            SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                key: _submitButtonKey, // Key for the submit button
+                onPressed: () {
+                  if (selectedProblemCategory != null && zipCode.isNotEmpty) {
+                    String issue = isCustomProblem
+                        ? customProblemDescription
+                        : selectedProblemCategory!;
+                    _getRepairShopsFromZip();
+                    _getHelpForDevice(selectedDevice!, issue);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Please enter a zip code')),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  backgroundColor: Color(0xff6750a4), // Deep purple button color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text('Get Help', style: TextStyle(color: Colors.white)), // White text on button
+              ),
+            ),
+            if (isLoading)
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(width: 16),
+                    Text('Fetching solution...', style: TextStyle(color: Colors.black)), // Black text
+                  ],
+                ),
+              ),
+            if (!isLoading && solution.isNotEmpty) ...[
+              SizedBox(height: 30),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
+                      color: Colors.black.withOpacity(0.2),
                       spreadRadius: 2,
                       blurRadius: 4,
                     ),
                   ],
                 ),
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  underline: SizedBox(),
-                  hint: Text('Select a problem category'),
-                  value: selectedProblemCategory,
-                  onChanged: _selectProblemCategory,
-                  items: problemCategories.map<DropdownMenuItem<String>>((String category) {
-                    return DropdownMenuItem<String>(
-                      value: category,
-                      child: Text(category),
-                    );
-                  }).toList(),
-                ),
-              ),
-              if (isCustomProblem) ...[
-                SizedBox(height: 10),
-                TextField(
-                  onChanged: (value) {
-                    customProblemDescription = value;
-                  },
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    hintText: "Describe the problem...",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  maxLines: 3,
-                ),
-              ],
-              SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  key: _submitButtonKey, // Key for the submit button
-                  onPressed: () {
-                    if (selectedProblemCategory != null && zipCode.isNotEmpty) {
-                      String issue = isCustomProblem
-                          ? customProblemDescription
-                          : selectedProblemCategory!;
-                      _getRepairShopsFromZip();
-                      _getHelpForDevice(selectedDevice!, issue);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Please enter a zip code')),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14), backgroundColor: Colors.blueAccent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text('Get Help'),
-                ),
-              ),
-              if (isLoading)
-                Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(),
-                      SizedBox(width: 16),
-                      Text('Fetching solution...'),
-                    ],
-                  ),
-                ),
-              if (!isLoading && solution.isNotEmpty) ...[
-                SizedBox(height: 30),
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        spreadRadius: 2,
-                        blurRadius: 4,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.star, color: Colors.yellow[700]),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Recommended Solution: \n $recommendedSolution',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.star, color: Color(0xff6750a4)), // Deep purple star
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Recommended Solution: \n $recommendedSolution',
+                            style: TextStyle(
+                              fontSize: 16, 
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black, // Black text for recommendation
                             ),
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 16),
-                      _buildRepairOptions(),
-                    ],
-                  ),
-                ),
-              ],
-              
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRepairOptions() {
-    return Column(
-      children: repairOptions.keys.map((option) {
-        return ExpansionTile(
-          title: Text(option, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: option == 'Independent Repair Shop'
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Near You:',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                        SizedBox(height: 8),
-                        ...repairShopOptions.entries.map((entry) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 4.0),
-                            child: RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: '• ',
-                                    style: TextStyle(fontSize: 16, color: Colors.black),
-                                  ),
-                                  TextSpan(
-                                    text: '${entry.key} | ${entry.value}',
-                                    style: TextStyle(fontSize: 16, color: Colors.black),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                        SizedBox(height: 10),
-                        Text(
-                          (repairOptions[option] ?? '').replaceAll("*", ""),
-                          style: TextStyle(fontSize: 14, color: Colors.grey[800]),
                         ),
                       ],
-                    )
-                  : Text(
-                      (repairOptions[option] ?? '').replaceAll("*", ""),
-                      style: TextStyle(fontSize: 14, color: Colors.grey[800]),
                     ),
-            ),
+                    SizedBox(height: 16),
+                    _buildRepairOptions(),
+                  ],
+                ),
+              ),
+            ],
+            
           ],
-        );
-      }).toList(),
-    );
-  }
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildRepairOptions() {
+  return Column(
+    children: repairOptions.keys.map((option) {
+      return ExpansionTile(
+        title: Text(option, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black)),
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: option == 'Independent Repair Shop'
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Near You:',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
+                      ),
+                      SizedBox(height: 8),
+                      ...repairShopOptions.entries.map((entry) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 4.0),
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: '• ',
+                                  style: TextStyle(fontSize: 16, color: Colors.black),
+                                ),
+                                TextSpan(
+                                  text: '${entry.key} | ${entry.value}',
+                                  style: TextStyle(fontSize: 16, color: Colors.black),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      SizedBox(height: 10),
+                      Text(
+                        (repairOptions[option] ?? '').replaceAll("*", ""),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+                      ),
+                    ],
+                  )
+                : Text(
+                    (repairOptions[option] ?? '').replaceAll("*", ""),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+                  ),
+          ),
+        ],
+      );
+    }).toList(),
+  );
+}
 }
