@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:namer_app/log_in_page.dart';
 import 'package:namer_app/survey_page.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -12,6 +14,9 @@ class _SignUpPageState extends State<SignUpPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+    final Color backgroundColor = Color(0xFFE6DFF1);
+  final Color accentColor = Colors.white; // Light lavender
+  final Color textColor = Colors.black;
 
   Future<void> _signUp() async {
     try {
@@ -58,9 +63,11 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign Up'),
-        backgroundColor: Colors.blue, // Example background color
+        title: Text('Sign Up', style: TextStyle(color: textColor)),
+        backgroundColor: backgroundColor, // White background for the AppBar
+        iconTheme: IconThemeData(color: textColor), // Black icon color
       ),
+      backgroundColor: backgroundColor, // Set the background color for the page
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -70,7 +77,20 @@ class _SignUpPageState extends State<SignUpPage> {
             children: [
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: TextStyle(color: textColor),
+                  filled: true,
+                  fillColor: accentColor.withOpacity(0.1),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: accentColor),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: accentColor, width: 2),
+                  ),
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
@@ -80,11 +100,25 @@ class _SignUpPageState extends State<SignUpPage> {
                   }
                   return null;
                 },
+                style: TextStyle(color: textColor),
               ),
               SizedBox(height: 20),
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  labelStyle: TextStyle(color: textColor),
+                  filled: true,
+                  fillColor: accentColor.withOpacity(0.1),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: accentColor),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: accentColor, width: 2),
+                  ),
+                ),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -95,6 +129,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   }
                   return null;
                 },
+                style: TextStyle(color: textColor),
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -103,10 +138,21 @@ class _SignUpPageState extends State<SignUpPage> {
                     _signUp();
                   }
                 },
-                style: ButtonStyle(
-                  foregroundColor: WidgetStateProperty.all<Color>(Colors.blue), // Background color
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: textColor, // Black background color for the button
+                  foregroundColor: accentColor, // White text color
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                child: Text('Sign Up'),
+                child: Text(
+                  'SIGNUP > ',
+                  style: GoogleFonts.lato(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),

@@ -9,7 +9,10 @@ class TrendingPage extends StatefulWidget {
   _TrendingPageState createState() => _TrendingPageState();
 }
 
-class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClientMixin {
+class _TrendingPageState extends State<TrendingPage>
+    with AutomaticKeepAliveClientMixin {
+  final Color backgroundColor = Color(0xFFE6DFF1);
+
   List<String> trendingCars = [];
   List<String> trendingPhones = [];
   List<String> trendingLaptops = [];
@@ -120,13 +123,16 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
             }
           } else {
             List<String> fetchedPhoneScores = scorePhone.split(",");
-            fetchedPhoneScores = fetchedPhoneScores.map((str) => str.trim()).toList();
+            fetchedPhoneScores =
+                fetchedPhoneScores.map((str) => str.trim()).toList();
 
             List<String> fetchedCarScores = scoreCar.split(",");
-            fetchedCarScores = fetchedCarScores.map((str) => str.trim()).toList();
+            fetchedCarScores =
+                fetchedCarScores.map((str) => str.trim()).toList();
 
             List<String> fetchedLaptopScores = scoreLaptop.split(",");
-            fetchedLaptopScores = fetchedLaptopScores.map((str) => str.trim()).toList();
+            fetchedLaptopScores =
+                fetchedLaptopScores.map((str) => str.trim()).toList();
 
             setState(() {
               carScores = fetchedCarScores;
@@ -150,15 +156,18 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
 
   Future<void> _search() async {
     final query = _searchController.text.trim();
-    
+
     String prompt1 = getSingleScoreSingleInputString(query);
     String score = await _fetchData(prompt1);
-    
+
     String prompt2 = getCategoryPrompt(query);
     String category = await _fetchData(prompt2);
     category = category.trim();
 
-    if (score.isEmpty || !(category == "Phones" || category == "Cars" || category == "Laptops")) {
+    if (score.isEmpty ||
+        !(category == "Phones" ||
+            category == "Cars" ||
+            category == "Laptops")) {
       setState(() {
         _searchController.text = "Device not found, please try again";
       });
@@ -166,7 +175,10 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => IndividualDevice(title: query.trim(), score: int.parse(score.trim()), category: category),
+          builder: (context) => IndividualDevice(
+              title: query.trim(),
+              score: int.parse(score.trim()),
+              category: category),
         ),
       );
     }
@@ -224,6 +236,8 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
     super.build(context);
     return Scaffold(
       appBar: AppBar(
+        
+        backgroundColor: backgroundColor,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -238,88 +252,96 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
                 SizedBox(width: 8),
                 Text(
                   'Trending',
-                  style: TextStyle(fontSize: 30, color: Colors.black),
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black),
                 ),
               ],
             ),
-            SizedBox(height: 2),
+            SizedBox(height: 5),
             Flexible(
               child: Text(
+                
                 trendingPageSubtitle,
                 style: TextStyle(fontSize: 16, color: Colors.black54),
                 overflow: TextOverflow.visible,
               ),
             ),
-          ],
-        ),
-        toolbarHeight: 100,
-      ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : _error ? 
+            SizedBox(height: 15),
+
             Center(
-              child: Container(
-                padding: EdgeInsets.all(16.0),
-                margin: EdgeInsets.symmetric(horizontal: 20.0),
-                decoration: BoxDecoration(
-                  color: Colors.red[50], 
-                  borderRadius: BorderRadius.circular(8.0), 
-                  border: Border.all(color: Colors.red, width: 2.0), 
-                ),
-                child: Text(
-                  resourceOverloadError,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.red[800], 
-                    fontWeight: FontWeight.bold, 
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  hintText: "Search for a device",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                  textAlign: TextAlign.center, 
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: _search,
+                  ),
                 ),
-              ),
-            )
-            : Scrollbar(
-              thumbVisibility: true,
-              controller: scrollController,
-              radius: Radius.circular(8),
-              child: SingleChildScrollView(
-                controller: scrollController,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Center(
-                        child: TextField(
-                          controller: _searchController,
-                          decoration: InputDecoration(
-                            hintText: "Search for a device",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                            suffixIcon: IconButton(
-                              icon: Icon(Icons.search),
-                              onPressed: _search,
-                            ),
-                          ),
-                          onSubmitted: (value) => _search(),
-                        ),
-                      ),
-                    ),
-                    _buildSubheading(context, 'Phones', trendingPhones),
-                    _buildSubheading(context, 'Cars', trendingCars),
-                    _buildSubheading(context, 'Laptops', trendingLaptops),
-                  ],
-                ),
+                onSubmitted: (value) => _search(),
               ),
             ),
+           SizedBox(height: 30),
+
+          ],
+        ),
+        toolbarHeight: 165,
+              ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _error
+              ? Center(
+                  child: Container(
+                    padding: EdgeInsets.all(16.0),
+                    margin: EdgeInsets.symmetric(horizontal: 20.0),
+                    decoration: BoxDecoration(
+                      color: Colors.red[50],
+                      borderRadius: BorderRadius.circular(8.0),
+                      border: Border.all(color: Colors.red, width: 2.0),
+                    ),
+                    child: Text(
+                      resourceOverloadError,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.red[800],
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+              : Scrollbar(
+                  thumbVisibility: true,
+                  controller: scrollController,
+                  radius: Radius.circular(8),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                        ),
+                        _buildSubheading(context, '  Phones', trendingPhones),
+                        _buildSubheading(context, '  Cars', trendingCars),
+                        _buildSubheading(context, '  Laptops', trendingLaptops),
+                      ],
+                    ),
+                  ),
+                ),
+      backgroundColor: Colors.white,
     );
   }
 
-  Widget _buildSubheading(BuildContext context, String title, List<String> items) {
+  Widget _buildSubheading(
+      BuildContext context, String title, List<String> items) {
     final ScrollController scrollController = ScrollController();
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -331,7 +353,7 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
           Container(
             height: 150,
             child: Scrollbar(
-              controller: scrollController, 
+              controller: scrollController,
               thumbVisibility: true,
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -340,7 +362,8 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
                   controller: scrollController,
                   itemCount: items.length,
                   itemBuilder: (context, index) {
-                    return _buildClickableBox(context, items[index], index, title);
+                    return _buildClickableBox(
+                        context, items[index], index, title);
                   },
                 ),
               ),
@@ -351,9 +374,14 @@ class _TrendingPageState extends State<TrendingPage> with AutomaticKeepAliveClie
     );
   }
 
-  Widget _buildClickableBox(BuildContext context, String item, int index, String category) {
+  Widget _buildClickableBox(
+      BuildContext context, String item, int index, String category) {
     List<String> scores = getScoreImage(category, index);
-    return ClickableBox(item: item, image: scores[1], score: int.parse(scores[0]), title: category);
+    return ClickableBox(
+        item: item,
+        image: scores[1],
+        score: int.parse(scores[0]),
+        title: category);
   }
 
   @override

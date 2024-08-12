@@ -44,7 +44,7 @@ class _ClickableBoxState extends State<ClickableBox> {
           margin: EdgeInsets.symmetric(horizontal: 8),
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.blue,
+            color: Color(0xFFE6DFF1),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: isHovered ? Colors.red : Colors.transparent, 
@@ -57,7 +57,7 @@ class _ClickableBoxState extends State<ClickableBox> {
               Text(
                 widget.item,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
@@ -68,6 +68,7 @@ class _ClickableBoxState extends State<ClickableBox> {
                 fit: BoxFit.cover,
                 height: 15, 
                 width: 100,
+                color: Color(0xff6750a4),
               ),
             ],
           ),
