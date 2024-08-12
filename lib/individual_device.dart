@@ -32,8 +32,8 @@ class _IndividualDevicePageState extends State<IndividualDevice> with AutomaticK
     '1 star': 'Hard to repair at home, expensive repair costs',
     '2 star': 'Challenges with home repair, expensive repair costs',
     '3 star': 'Repair at home with effort, moderate repair costs',
-    '4 star': 'Relatively easy to repair at home, reasonable repair costs',
-    '5 star': 'Generally easily repairable at home, low repair costs',
+    '4 star': 'Repairable at home, reasonable repair costs',
+    '5 star': 'Easily repairable at home, low repair costs',
   };
   String _selectedScoreDescription = "";
 
