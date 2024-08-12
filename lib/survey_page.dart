@@ -22,6 +22,8 @@ class _SurveyPageState extends State<SurveyPage> {
     if (_currentPage == 0) {
       if (phone == null || phone!.trim().isEmpty) {
         _moveToNextPage();
+      } else if (dotenv.env['TECHSPEC_API_KEY'] != null && dotenv.env['TECHSPEC_API_KEY']!.isNotEmpty) {
+        _moveToNextPage();
       } else if (await _verifyPhoneModel(phone!)) {
         _moveToNextPage();  
       } else {
@@ -37,6 +39,8 @@ class _SurveyPageState extends State<SurveyPage> {
       }
     } else if (_currentPage == 2) {
       if (laptop == null || laptop!.trim().isEmpty) {
+        _submitSurvey();
+      } else if (dotenv.env['TECHSPEC_API_KEY'] != null && dotenv.env['TECHSPEC_API_KEY']!.isNotEmpty) {
         _submitSurvey();
       } else if (await _verifyLaptopModel(laptop!)) {
         _submitSurvey();
