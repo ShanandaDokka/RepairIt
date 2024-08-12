@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -60,7 +61,7 @@ void _moveToNextPage() {
       headers: {
         'query': laptopModel.trim(),
         'keepCasing': 'true',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImN1c19RUzhLNHFMQjVKcTJKTyIsIm1vZXNpZlByaWNpbmdJZCI6InByaWNlXzFNUXF5dkJESWxQbVVQcE1SWUVWdnlLZSIsImlhdCI6MTcyMDY2OTk1N30.bE4rTfAhAGE-Fc0hEnN5kxMZleqqtW0xaEG6NdfQBC8', 
+        'Authorization': dotenv.env['API_KEY']!, 
       },
       body: jsonEncode({
         'category': 'laptop',
@@ -89,7 +90,7 @@ void _moveToNextPage() {
       headers: {
         'query': phoneModel.trim(),
         'keepCasing': 'true',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImN1c19RUzhLNHFMQjVKcTJKTyIsIm1vZXNpZlByaWNpbmdJZCI6InByaWNlXzFNUXF5dkJESWxQbVVQcE1SWUVWdnlLZSIsImlhdCI6MTcyMDY2OTk1N30.bE4rTfAhAGE-Fc0hEnN5kxMZleqqtW0xaEG6NdfQBC8', 
+        'Authorization': dotenv.env['API_KEY']!, 
       },
       body: jsonEncode({
         'category': 'phone',
