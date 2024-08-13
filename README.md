@@ -1,6 +1,8 @@
 # RepairIt
 Introducing RepairIt, designed to revolutionize your approach to electronic repairs. Leveraging the advanced capabilities of Gemini AI, our Flutter app offers a detailed score on the ease of repairing various devices. After creating an account, users can input their device information which will be stored through Google Firebase, allowing personalized repair recommendations. Whether you need advice on at-home fixes, local repair options, or manufacturer services, our app delivers tailored guidance. If your device exhibits symptoms, simply enter them into the app to receive an accurate diagnosis and the most convenient, cost-effective repair solutions. This even includes repair suggestions near your location for local repair options. Additionally, potential buyers can explore information on specific or trending devices, empowering them to make well-informed purchase decisions. Our app aligns with the Right-to-Repair movement, which advocates for consumers' right to repair their own devices and access necessary parts and information. This cause has gained significant traction, with Google publicly supporting consumers' right to repair. By advancing this cause, our app contributes to environmental sustainability, reducing e-waste and promoting responsible repair practices.
 
+### [Watch Our Video](https://www.youtube.com/watch?v=cTs1sFE2N4U)
+
 # Run The App
 ### Requiremenets
 * Xcode Installed and Running: Ensure Xcode is installed and up to date. We recommend running the iPhone 15 Pro simulator on your machine.
