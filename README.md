@@ -17,7 +17,8 @@ Introducing RepairIt, designed to revolutionize your approach to electronic repa
 4. Install dependencies: open the terminal and ensure all the Flutter dependencies are installed by running `flutter pub get`
 4. Clean any previous builds and create a fresh one by running `flutter clean` followed by `flutter build ios`. 
 5. Finally, run `flutter run` and ensure that the app opens on your simulator. 
-6. Star by signing up if you don't already have an account and navigate through the different components of the app!
+6. Note, if you see a Firebase/Auth Cocoapods error, go into the ios/ directory (`cd ios/`) and run `pod 'Firebase/Auth`. Then, `cd ..` and try `flutter run` again
+7. Star by signing up if you don't already have an account and navigate through the different components of the app!
 
 ### Optional (Running on a Physical Device)
 If you want to run the app on a physical iOS device, make sure your device is connected, and you have the proper developer certificates and provisioning profiles set up. If you encounter issues, consider running flutter doctor to check for any setup problems, and consult the [Flutter documentation](https://docs.flutter.dev/) for detailed guides.
